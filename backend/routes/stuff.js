@@ -3,7 +3,6 @@ const Thing = require('../models/Thing')
 const stuff = require('../controllers/stuff')
 const router = express.Router();
 
-router.post('/auth/login', stuff.login);
-router.use('/books', stuff.books );
+router.use('/', stuff.books );
 
 module.exports = router;
