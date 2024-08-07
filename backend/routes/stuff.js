@@ -5,6 +5,6 @@ const router = express.Router();
 const multer = require('multer');
 
 router.get('/', stuff.books );
-router.post('/', auth, multer, stuff.booksAdd );
+router.post('/', stuff.booksAdd );
 
 module.exports = router;

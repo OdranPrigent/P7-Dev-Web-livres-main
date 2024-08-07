@@ -13,7 +13,9 @@ exports.books = (req, res, next) => {
 };
 
 exports.booksAdd = (req, res, next) => {
+  console.log(req.body)
   const bookData = JSON.parse(req.body.book);
+  console.log(bookData)
   delete bookData.userId;
   const thing = new Thing({
     ...bookData,
