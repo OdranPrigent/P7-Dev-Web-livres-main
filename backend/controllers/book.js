@@ -1,8 +1,9 @@
-const Thing = require('../models/Thing')
+const Book = require('../models/Book')
 const fs = require('fs'); 
 
+
 exports.books = (req, res, next) => {
-  Thing.find()
+  Book.find()
     .then(things => {
       res.status(200).json(things);
     })
@@ -12,10 +13,14 @@ exports.books = (req, res, next) => {
     });
 };
 
+exports.book = (req, res, next) => {
+    Book.findOne({ _id: req.params.id })
+      .then(thing => res.status(200).json(thing))
+      .catch(error => res.status(404).json({ error }));
+};
+
 exports.booksAdd = (req, res, next) => {
-  console.log(req.body)
   const bookData = JSON.parse(req.body.book);
-  console.log(bookData)
   delete bookData.userId;
   const thing = new Thing({
     ...bookData,
