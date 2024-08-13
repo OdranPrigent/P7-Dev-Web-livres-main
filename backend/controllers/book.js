@@ -25,6 +25,13 @@ exports.bookUpdate = (req, res, next) => {
     .catch(error => res.status(404).json({ error }))
 };
 
+exports.bookAddRating = (req, res, next) => {
+
+  Book.findOneAndUpdate({ _id: req.params.id }, { $push: { ratings: req.body }}, { new: true })
+    .then(updateBook => res.status(200).json(updateBook))
+    .catch(error => res.status(404).json({ error }))
+};
+
 exports.bookDelete = (req, res, next) => {
   Book.findOneAndDelete({ _id: req.params.id })
     .then(deletedBook => res.status(200).json(deletedBook))
