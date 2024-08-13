@@ -20,19 +20,9 @@ exports.book = (req, res, next) => {
 };
 
 exports.bookUpdate = (req, res, next) => {
-  console.log(req.body.book)
-  const bookData = req.body.book;
-  delete bookData.userId;
-  const book = new Book({
-    ...bookData,
-    userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  });
-  delete Book.findOne({ _id: req.params.id });
-
-  book.save()
-  .then(() => { res.status(201).json({message: 'Objet modifié'})})
-  .catch(error => { res.status(400).json( { error })})
+  Book.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true })
+    .then(updateBook => res.status(200).json(updateBook))
+    .catch(error => res.status(404).json({ error }))
 };
 
 exports.bookDelete = (req, res, next) => {
