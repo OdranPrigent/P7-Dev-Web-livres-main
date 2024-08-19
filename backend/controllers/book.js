@@ -48,10 +48,13 @@ exports.bestRating = (req, res, next) => {
 };
 
 exports.bookDelete = (req, res, next) => {
-  fs.unlink("")
-  Book.findOneAndDelete({ _id: req.params.id })
-    .then(deletedBook => res.status(200).json(deletedBook))
-    .catch(error => res.status(404).json({ error }));
+  Book.findOne({ _id: req.params.id })  
+    .then(thing => {
+    fs.unlinkSync("images/"+thing.imageUrl.split('/').pop())
+    Book.findOneAndDelete({ _id: req.params.id })
+      .then(deletedBook => res.status(200).json(deletedBook))
+      .catch(error => res.status(404).json({ error }));
+    })
 };
 
 exports.booksAdd = (req, res, next) => {
