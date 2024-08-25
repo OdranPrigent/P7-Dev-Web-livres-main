@@ -1,5 +1,6 @@
 const Book = require('../models/Book')
 const fs = require('fs'); 
+const sharp = require('sharp');
 
 
 exports.books = (req, res, next) => {
@@ -20,11 +21,17 @@ exports.book = (req, res, next) => {
 };
 
 exports.bookUpdate = (req, res, next) => {
-  Book.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true })
+    Book.findOne({ _id: req.params.id })  
+    .then(thing => {
+      if (req.file){
+        fs.unlinkSync("images/"+thing.imageUrl.split('/').pop())
+        req.body.imageUrl =  "http://localhost:4000/images/" +req.file.filename
+      }
+      Book.findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true })
     .then(updateBook => res.status(200).json(updateBook))
-    .catch(error => res.status(404).json({ error }))
+    .catch(error => res.status(404).json({ error }))})
+    .catch(error => res.status(400).json({ error }));
 };
-// Book.find().sort({ averageRating: -1 }).limit(3)
 
 exports.bookAddRating = (req, res, next) => {
   Book.findOne({ _id: req.params.id })  
@@ -35,7 +42,6 @@ exports.bookAddRating = (req, res, next) => {
       .then(updateBook => res.status(200).json(updateBook))
       .catch(error => res.status(404).json({ error }))})
     .catch(error => res.status(400).json({ error }));
-  //if (!b.body.ratings.findOne(id: req.body.userId))
 };
 
 exports.bestRating = (req, res, next) => {
@@ -60,13 +66,14 @@ exports.bookDelete = (req, res, next) => {
 exports.booksAdd = (req, res, next) => {
   const bookData = JSON.parse(req.body.book);
   delete bookData.userId;
+  let t = new Date();
   const book = new Book({
     ...bookData,
     userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    imageUrl: `${req.protocol}://${req.get('host')}/${req.file.path}`
   });
-
   book.save()
-  .then(() => { res.status(201).json({message: 'Objet enregistré !'})})
+  .then(() => { 
+    res.status(201).json({message: 'Objet enregistré !'})})
   .catch(error => { res.status(400).json( { error })})
 };
