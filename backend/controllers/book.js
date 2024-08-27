@@ -1,7 +1,5 @@
 const Book = require('../models/Book')
 const fs = require('fs'); 
-const sharp = require('sharp');
-
 
 exports.books = (req, res, next) => {
   Book.find()
@@ -36,7 +34,6 @@ exports.bookUpdate = (req, res, next) => {
 exports.bookAddRating = (req, res, next) => {
   Book.findOne({ _id: req.params.id })  
     .then(thing => {
-      thing.ratings.include({test :req.body.userId})
       Book.findOneAndUpdate({ _id: req.params.id }, { $push: { ratings: {userId:req.body.userId, grade:req.body.rating} }, 
       $set: { averageRating: ((thing.averageRating*thing.ratings.length)+req.body.rating)/(thing.ratings.length+1)} }, { new: true })
       .then(updateBook => res.status(200).json(updateBook))
